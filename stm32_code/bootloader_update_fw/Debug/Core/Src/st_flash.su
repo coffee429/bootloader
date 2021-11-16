@@ -1,0 +1,8 @@
+st_flash.c:11:10:flash_get_sector	24	static
+st_flash.c:60:6:flash_erase	56	static
+st_flash.c:79:6:flash_write_int	16	static
+st_flash.c:87:6:flash_write_float	16	static
+st_flash.c:94:6:flash_write_array	40	static
+st_flash.c:131:5:flash_read_int	16	static
+st_flash.c:136:7:flash_read_float	24	static
+st_flash.c:142:6:flash_read_array	40	static
