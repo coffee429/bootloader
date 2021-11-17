@@ -4,18 +4,22 @@
 #include <QSerialPort>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QTextStream>
+#include <QDebug>
+#include <QThread>
 
 QSerialPort *mSerial;
 QFile       *mFile;
 bool serialConnected = false;
-qint16 cnt = 0;
+QString fileData;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setWindowTitle("Bootloader");
-//    ui->txtFile->setReadOnly(true);
+    ui->txtFile->setReadOnly(true);
+    ui->btnLoad->setEnabled(false);
 }
 
 
@@ -30,7 +34,6 @@ void MainWindow::on_btnConnect_clicked()
 {
     if(!serialConnected)
     {
-        if(ui->btnConnect->text() == "Connect")
         mSerial = new QSerialPort(this);
         mSerial->setPortName("COM19");
         mSerial->setBaudRate(QSerialPort::Baud115200);
@@ -43,6 +46,7 @@ void MainWindow::on_btnConnect_clicked()
         {
             ui->btnConnect->setText("Disconnect");
             serialConnected = true;
+            ui->btnLoad->setEnabled(true);
         }
         else
         {
@@ -51,13 +55,13 @@ void MainWindow::on_btnConnect_clicked()
             msgBox.exec();
         }
     }
-
     else
     {
         ui->btnConnect->setText("Connect");
         serialConnected = false;
         mSerial->close();
         ui->txtFile->clear();
+        ui->btnLoad->setEnabled(false);
     }
 }
 
@@ -76,9 +80,42 @@ void MainWindow::on_btnOpen_clicked()
 
 void MainWindow::on_btnLoad_clicked()
 {
-    if(serialConnected)
+    // Send each record every 200ms
+    QTextStream in(mFile);
+    while (!in.atEnd())
     {
-        mSerial->write((ui->txtFile->toPlainText()).toUtf8());
+        QString record = in.readLine();
+        ui->txtFile_2->setText(record);
+        mSerial->write(record.toUtf8());
+        QThread::msleep(100);
     }
+    mFile->close();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
