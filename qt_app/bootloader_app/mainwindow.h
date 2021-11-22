@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFile>
+#include <QSerialPort>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,5 +26,11 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    void recordSub();           // Get record (line) in file
+
+public:
+    QSerialPort *mSerial;
+    QFile       *mFile;
 };
 #endif // MAINWINDOW_H

@@ -1,17 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QFile>
-#include <QSerialPort>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
-#include <QThread>
 
-QSerialPort *mSerial;
-QFile       *mFile;
 bool serialConnected = false;
-QString fileData;
+QString hexFile;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -19,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("Bootloader");
     ui->txtFile->setReadOnly(true);
-    ui->btnLoad->setEnabled(false);
+//    ui->btnLoad->setEnabled(false);
 }
 
 
@@ -75,21 +70,20 @@ void MainWindow::on_btnOpen_clicked()
     {
         return;
     }
-    ui->txtFile->setText(mFile->readAll());
+
+    hexFile = mFile->readAll();
+    ui->txtFile->setText(hexFile);
 }
 
 void MainWindow::on_btnLoad_clicked()
 {
-    // Send each record every 200ms
-    QTextStream in(mFile);
-    while (!in.atEnd())
+    int endPos = hexFile.indexOf("\n");
+    while (endPos>-1)
     {
-        QString record = in.readLine();
-        ui->txtFile_2->setText(record);
-        mSerial->write(record.toUtf8());
-        QThread::msleep(100);
+        qInfo() << hexFile.left(endPos);
+        hexFile.remove(0, endPos+1);
+        endPos = hexFile.indexOf("\n");
     }
-    mFile->close();
 }
 
 
