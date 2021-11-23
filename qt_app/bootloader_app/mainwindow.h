@@ -27,8 +27,13 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    void recordSub();           // Get record (line) in file
+    void getDataRecord(QByteArray recordToSub);
 
+    char hexConverter(char highByte, char lowByte);
+
+    void swapDataByte();
+
+    void sendFirmwareData();
 public:
     QSerialPort *mSerial;
     QFile       *mFile;

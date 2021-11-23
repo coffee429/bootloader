@@ -7,6 +7,10 @@
 
 bool serialConnected = false;
 QString hexFile;
+QByteArray bootData;
+QByteArray recordHexBuffer;
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -77,13 +81,48 @@ void MainWindow::on_btnOpen_clicked()
 
 void MainWindow::on_btnLoad_clicked()
 {
+    hexFile = hexFile.remove(hexFile.indexOf(":"), hexFile.indexOf("\n") + 1);              // remove 1st record
+    hexFile = hexFile.remove(hexFile.lastIndexOf(":"), hexFile.lastIndexOf("\n") + 1);      // remove last record
+
     int endPos = hexFile.indexOf("\n");
     while (endPos>-1)
     {
-        qInfo() << hexFile.left(endPos);
+//        qInfo() << hexFile.left(endPos);
+        getDataRecord((hexFile.left(endPos)).toUtf8());
         hexFile.remove(0, endPos+1);
         endPos = hexFile.indexOf("\n");
     }
+}
+
+
+
+void MainWindow::getDataRecord(QByteArray record)
+{
+    record = record.remove(0,1);                                                // remove ":" character
+    for(int i=0;i<record.length();i+=2)
+    {
+      recordHexBuffer.insert(i/2, hexConverter(record.at(i), record.at(i+1)));       // convert record from string to hex and save to buffer
+    }
+    qInfo() << recordHexBuffer;
+    recordHexBuffer.remove(0, 21);
+}
+
+
+
+char MainWindow::hexConverter(char highByte, char lowByte)
+{
+    if(highByte >= '0' && highByte <= '9')			highByte = highByte - '0';
+    else if(highByte >= 'A' && highByte <= 'F')		highByte = highByte - 'A' + 10;
+
+    if(lowByte >= '0' && lowByte <= '9')			lowByte = lowByte - '0';
+    else if(lowByte >= 'A' && lowByte <= 'F')		lowByte = lowByte - 'A' + 10;
+
+    return (highByte << 4 | lowByte);
+}
+
+void MainWindow::swapDataByte()
+{
+
 }
 
 
