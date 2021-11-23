@@ -27,7 +27,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    void recordSub();           // Get record (line) in file
+    void getDataRecord();
+
 
 public:
     QSerialPort *mSerial;

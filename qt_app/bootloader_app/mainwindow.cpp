@@ -77,6 +77,10 @@ void MainWindow::on_btnOpen_clicked()
 
 void MainWindow::on_btnLoad_clicked()
 {
+    hexFile = hexFile.remove(hexFile.indexOf(":"), hexFile.indexOf("\n") + 1);                  // Delete 1st record
+    hexFile = hexFile.remove(hexFile.lastIndexOf(":"), hexFile.lastIndexOf("\n") + 1);          // Delete last record
+
+
     int endPos = hexFile.indexOf("\n");
     while (endPos>-1)
     {
@@ -84,6 +88,11 @@ void MainWindow::on_btnLoad_clicked()
         hexFile.remove(0, endPos+1);
         endPos = hexFile.indexOf("\n");
     }
+}
+
+void MainWindow::getDataRecord()
+{
+
 }
 
 
