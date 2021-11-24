@@ -68,16 +68,16 @@ void MainWindow::on_btnConnect_clicked()
 
 void MainWindow::on_btnOpen_clicked()
 {
-    QString mFilePath = QFileDialog::getOpenFileName(this, tr("Open hex file"), "", tr("Text file(*.hex)"));
+    QString mFilePath = QFileDialog::getOpenFileName(this, tr("Open hex file"), "", tr("Text file(*.hex)"));            // open file path, check file .hex only
 
     mFile = new QFile(mFilePath);
-    if(!mFile->open(QIODevice::ReadOnly | QIODevice::Text))
+    if(!mFile->open(QIODevice::ReadOnly | QIODevice::Text))                                                             // open file
     {
         return;
     }
 
-    hexFile = mFile->readAll();
-    ui->txtFile->setText(hexFile);
+    hexFile = mFile->readAll();                                                                                         // read all file data
+    ui->txtFile->setText(hexFile);                                                                                      // set text to ui
 }
 
 void MainWindow::on_btnLoad_clicked()
@@ -85,13 +85,16 @@ void MainWindow::on_btnLoad_clicked()
     hexFile = hexFile.remove(hexFile.indexOf(":"), hexFile.indexOf("\n") + 1);              // remove 1st record
     hexFile = hexFile.remove(hexFile.lastIndexOf(":"), hexFile.lastIndexOf("\n") + 1);      // remove last record
 
-    int endPos = hexFile.indexOf("\n");
+    int endPos = hexFile.indexOf("\n");                                                     // find position of "\n" character - ending record character
     while (endPos>-1)
     {
 //        qInfo() << hexFile.left(endPos);
-        getDataRecord((hexFile.left(endPos)).toUtf8());
-        hexFile.remove(0, endPos+1);
-        endPos = hexFile.indexOf("\n");
+        getDataRecord((hexFile.left(endPos)).toUtf8());                                    // get byte data to send
+        sendFirmwareData(bootBuffer);                                                      // send firmware data to MCU
+        bootBuffer.remove(0,16);                                                           // clear data send buffer
+        recordHexBuffer.remove(0, 21);                                                     // clear record buffer
+        hexFile.remove(0, endPos+1);                                                       // after process 1record(line, remove it
+        endPos = hexFile.indexOf("\n");                                                    // find next "\n" character
     }
 }
 
@@ -99,36 +102,36 @@ void MainWindow::on_btnLoad_clicked()
 
 void MainWindow::getDataRecord(QByteArray record)
 {
-    record = record.remove(0,1);                                                      // remove ":" character
+    record = record.remove(0,1);                                                            // remove ":" character
     for(int i=0;i<record.length();i+=2)
     {
-      recordHexBuffer.insert(i/2, hexConverter(record.at(i), record.at(i+1)));       // convert record from string to hex and save to buffer
+      recordHexBuffer.insert(i/2, hexConverter(record.at(i), record.at(i+1)));              // convert record from string to hex and save to buffer
     }
 //    qInfo() << recordHexBuffer;
 
-    if(recordHexBuffer.at(3) == 0x00)
+    if(recordHexBuffer.at(3) == 0x00)                                                       // confirm record has firmware data byte to write
     {
-        switch (recordHexBuffer.at(0))
+        switch (recordHexBuffer.at(0))                                                      // check data size
         {
-            case 0x10:
+            case 0x10:                                                                      // 16 byte data to send
                 for(int i=0;i<16;i++)
                 {
                     bootBuffer.insert(i, recordHexBuffer.at(i+4));
                 }
                 break;
-            case 0x08:
+            case 0x08:                                                                      // 8 byte data to send
                 for(int i=0;i<8;i++)
                 {
                     bootBuffer.insert(i, recordHexBuffer.at(i+4));
                 }
                 break;
-            case 0x04:
+            case 0x04:                                                                      // 4 byte data to send
                 for(int i=0;i<4;i++)
                 {
                     bootBuffer.insert(i, recordHexBuffer.at(i+4));
                 }
                 break;
-            case 0x0C:
+            case 0x0C:                                                                      // 12 byte data to send
                 for(int i=0;i<12;i++)
                 {
                     bootBuffer.insert(i, recordHexBuffer.at(i+4));
@@ -137,13 +140,12 @@ void MainWindow::getDataRecord(QByteArray record)
         }
         qInfo() << bootBuffer;
     }
-    bootBuffer.remove(0,16);
-    recordHexBuffer.remove(0, 21);
+
 }
 
 
 
-char MainWindow::hexConverter(char highByte, char lowByte)
+char MainWindow::hexConverter(char highByte, char lowByte)                                  // convert string to hex type, for example 'A' 'B' -> 0xAB
 {
     if(highByte >= '0' && highByte <= '9')			highByte = highByte - '0';
     else if(highByte >= 'A' && highByte <= 'F')		highByte = highByte - 'A' + 10;
@@ -154,10 +156,26 @@ char MainWindow::hexConverter(char highByte, char lowByte)
     return (highByte << 4 | lowByte);
 }
 
-void MainWindow::swapDataByte()
+void MainWindow::sendFirmwareData(QByteArray fwBuffer)
 {
-
+    uint8_t dataSize = fwBuffer.length();                                                   // firmware data size in 1 record
+    uint8_t _4ByteGroup = 0;                                                                // split data into group of 4 byte to swap, max 16 bytes
+    while (_4ByteGroup < dataSize/4)
+    {
+        uint8_t temp = fwBuffer.at(_4ByteGroup*4);
+        fwBuffer[_4ByteGroup*4] = fwBuffer[_4ByteGroup*4 + 3];                              // swap byte 0 & byte 3
+        fwBuffer[_4ByteGroup*4 + 3] = temp;
+        temp = fwBuffer.at(_4ByteGroup*4 + 1);
+        fwBuffer[_4ByteGroup*4 + 1] = fwBuffer[_4ByteGroup*4 + 2];                          // swap byte 1 & byte 2
+        fwBuffer[_4ByteGroup*4 + 2] = temp;
+        _4ByteGroup ++;
+    }
+    qInfo() << fwBuffer;
+    mSerial->write(":");                                                                    // serial send begin character ":"
+    mSerial->write(bootBuffer);                                                             // serial send firmware data
+    mSerial->write("\n");                                                                   // serial send end character "\n"
 }
+
 
 
 

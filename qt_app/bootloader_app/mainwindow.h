@@ -31,9 +31,7 @@ private:
 
     char hexConverter(char highByte, char lowByte);
 
-    void swapDataByte();
-
-    void sendFirmwareData();
+    void sendFirmwareData(QByteArray fwBuffer);
 public:
     QSerialPort *mSerial;
     QFile       *mFile;
