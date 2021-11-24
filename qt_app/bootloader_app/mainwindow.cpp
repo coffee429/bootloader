@@ -4,11 +4,12 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
+#include <QThread>
 
 bool serialConnected = false;
 QString hexFile;
-QByteArray bootData;
-QByteArray recordHexBuffer;
+QByteArray bootBuffer;                  // data to send to MCU for bootloader
+QByteArray recordHexBuffer;             // hex buffer of record adter convert from string
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -98,12 +99,45 @@ void MainWindow::on_btnLoad_clicked()
 
 void MainWindow::getDataRecord(QByteArray record)
 {
-    record = record.remove(0,1);                                                // remove ":" character
+    record = record.remove(0,1);                                                      // remove ":" character
     for(int i=0;i<record.length();i+=2)
     {
       recordHexBuffer.insert(i/2, hexConverter(record.at(i), record.at(i+1)));       // convert record from string to hex and save to buffer
     }
-    qInfo() << recordHexBuffer;
+//    qInfo() << recordHexBuffer;
+
+    if(recordHexBuffer.at(3) == 0x00)
+    {
+        switch (recordHexBuffer.at(0))
+        {
+            case 0x10:
+                for(int i=0;i<16;i++)
+                {
+                    bootBuffer.insert(i, recordHexBuffer.at(i+4));
+                }
+                break;
+            case 0x08:
+                for(int i=0;i<8;i++)
+                {
+                    bootBuffer.insert(i, recordHexBuffer.at(i+4));
+                }
+                break;
+            case 0x04:
+                for(int i=0;i<4;i++)
+                {
+                    bootBuffer.insert(i, recordHexBuffer.at(i+4));
+                }
+                break;
+            case 0x0C:
+                for(int i=0;i<12;i++)
+                {
+                    bootBuffer.insert(i, recordHexBuffer.at(i+4));
+                }
+                break;
+        }
+        qInfo() << bootBuffer;
+    }
+    bootBuffer.remove(0,16);
     recordHexBuffer.remove(0, 21);
 }
 
