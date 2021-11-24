@@ -60,18 +60,8 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN 0 */
 #define APP_CURRENT 0x08000000
 #define APP_UPDATE	0x08020000
-#define RX_BUFFER_SIZE	200
 
-
-typedef struct
-{
-	char Buffer[RX_BUFFER_SIZE];
-	bool Flag;
-	uint8_t Data[1];
-	uint16_t Idx;
-}RX_UART;
-
-RX_UART rx;
+uint8_t rx_data[1];
 
 int _write(int file, char *ptr, int len)
 {
@@ -86,8 +76,8 @@ int _write(int file, char *ptr, int len)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	bootloader_uart_get_hex_file(rx.Data[0]);
-	HAL_UART_Receive_IT(&huart2, rx.Data, 1);
+	bootloader_get_data(rx_data[0]);
+	HAL_UART_Receive_IT(&huart2, rx_data, 1);
 }
 
 /* USER CODE END 0 */
@@ -122,7 +112,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart2, rx.Data, 1);
+  HAL_UART_Receive_IT(&huart2, rx_data, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -132,9 +122,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  bootloader_update_firmware(APP_UPDATE);
-	  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-	  HAL_Delay(5000);
+//	  bootloader_update_firmware(APP_UPDATE);
+
 
   }
   /* USER CODE END 3 */

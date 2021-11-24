@@ -172,7 +172,7 @@ void MainWindow::sendFirmwareData(QByteArray fwBuffer)
     }
     qInfo() << fwBuffer;
     mSerial->write(":");                                                                    // serial send begin character ":"
-    mSerial->write(bootBuffer);                                                             // serial send firmware data
+    mSerial->write(fwBuffer);                                                             // serial send firmware data
     mSerial->write("\n");                                                                   // serial send end character "\n"
 }
 

@@ -1,7 +1,1 @@
-st_bootloader.c:12:6:check_hex_file	4	static
-st_bootloader.c:24:6:check_new_firmware	4	static
-st_bootloader.c:30:9:convert_str_to_hex	16	static
-st_bootloader.c:42:6:swap_byte	32	static
-st_bootloader.c:64:6:bootloader_uart_get_hex_file	24	static
-st_bootloader.c:95:6:bootloader_set_address	16	static
-st_bootloader.c:100:6:bootloader_update_firmware	24	static
+st_bootloader.c:10:6:bootloader_get_data	16	static
