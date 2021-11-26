@@ -27,13 +27,27 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    void getDataRecord(QByteArray recordToSub);
+    void fileProcess(QByteArray file);                // processing file, get record, hex convert, get data for bootloader, swap byte, add to bootloader buffer to send
 
-    char hexConverter(char highByte, char lowByte);
+    uint16_t getTotalBytes();                               // get total bytes of data
 
-    void sendFirmwareData(QByteArray fwBuffer);
+    void getDataRecord(QByteArray recordToSub);       // get data to send bootloader
+
+    char hexConverter(char highByte, char lowByte);   // convert string to hex
+
+    void addBootloaderData(QByteArray addBuffer);     // add firmware data to bootloader buffer
+
+
 public:
     QSerialPort *mSerial;
     QFile       *mFile;
+
+    bool serialConnected = false;
+    QString hexFile;                        // hex file opened for bootloader
+    QByteArray bootBuffer;                  // data to send to MCU for bootloader
+    uint16_t bootBuffIdx = 0;               // index in bootloader buffer
+    uint16_t totalBytes = 0;
+    QByteArray recordHexBuffer;             // hex buffer of record after convert from string
+    QByteArray recordDataBuffer;
 };
 #endif // MAINWINDOW_H
