@@ -98,7 +98,7 @@ void flash_write_array(void *bufferW, uint32_t startAddress, uint32_t size, Data
 
 	switch(DATA_TYPE)
 	{
-		case BYTE_1:
+		case _1_BYTE:
 			for(uint8_t i=0; i< size; i++)
 			{
 				HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE, wAddress, ((uint8_t*)bufferW)[i]);
@@ -106,7 +106,7 @@ void flash_write_array(void *bufferW, uint32_t startAddress, uint32_t size, Data
 			}
 			break;
 
-		case BYTE_2:
+		case _2_BYTE:
 			for(uint16_t i=0; i< size; i++)
 			{
 				HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, wAddress, ((uint16_t*)bufferW)[i]);
@@ -114,7 +114,7 @@ void flash_write_array(void *bufferW, uint32_t startAddress, uint32_t size, Data
 			}
 			break;
 
-		case BYTE_4:
+		case _4_BYTE:
 			for(uint32_t i=0; i< size; i++)
 			{
 				HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, wAddress, ((uint32_t*)bufferW)[i]);
@@ -144,21 +144,21 @@ void flash_read_array(void *bufferR, uint32_t startAddress, uint32_t size, DataT
 	uint32_t rAddress = startAddress;
 	switch(DATA_TYPE)
 	{
-		case BYTE_1:
+		case _1_BYTE:
 			for(uint8_t i=0; i<size; i++)
 			{
 				*((uint8_t*)bufferR + i) = *(uint8_t*)rAddress;
 				rAddress ++;
 			}
 			break;
-		case BYTE_2:
+		case _2_BYTE:
 			for(uint16_t i=0; i<size; i++)
 			{
 				*((uint16_t*)bufferR + i) = *(uint16_t*)rAddress;
 				rAddress += 2;
 			}
 			break;
-		case BYTE_4:
+		case _4_BYTE:
 			for(uint32_t i=0; i<size; i++)
 			{
 				*((uint32_t*)bufferR + i) = *(uint32_t*)rAddress;

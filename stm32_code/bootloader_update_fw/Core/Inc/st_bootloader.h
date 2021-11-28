@@ -12,19 +12,18 @@
 #include "st_flash.h"
 #include <string.h>
 
-#define HEX_BUFFER_SIZE	8000
-
-
+#define HEX_BUFFER_SIZE	6000
+uint16_t byte_cnt;
 typedef struct
 {
 	uint8_t 	data_buffer[HEX_BUFFER_SIZE];
+	int 		total_bytes;
 	uint16_t 	idx;
+	uint8_t 	flag;
+	uint8_t		jump_application;
 }Bootloader_Struct;
 
-
-
-void bootloader_get_data(uint8_t rx_data);							// Get byte from uart, received 1 record/time -> convert to hex form & save to buffer
-bool bootloader_update_firmware(uint32_t fwAdress);							// Update firmware function
-void bootloader_set_address(uint32_t fwAddress);							// Set start address for bootloader
-
+void bootloader_init();
+void bootloader_get_data(uint8_t rx_data);									// Get byte from uart, received 1 record/time -> convert to hex form & save to buffer
+void bootloader_update(uint32_t address);
 #endif /* INC_ST_BOOTLOADER_H_ */

@@ -58,8 +58,8 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define APP_CURRENT 0x08000000
-#define APP_UPDATE	0x08020000
+#define ADDR_CURRENT 0x08000000
+#define ADDR_UPDATE	0x0800A000
 
 uint8_t rx_data[1];
 
@@ -112,6 +112,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  bootloader_init();
   HAL_UART_Receive_IT(&huart2, rx_data, 1);
   /* USER CODE END 2 */
 
@@ -122,7 +123,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//	  bootloader_update_firmware(APP_UPDATE);
+	  bootloader_update(ADDR_UPDATE);
+
 
 
   }

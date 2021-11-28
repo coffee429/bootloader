@@ -15,9 +15,9 @@
 
 typedef enum
 {
-	BYTE_1,
-	BYTE_2,
-	BYTE_4,
+	_1_BYTE,
+	_2_BYTE,
+	_4_BYTE,
 }DataTypedef;
 
 uint32_t flash_get_sector(uint32_t address);

@@ -24,6 +24,7 @@ private slots:
 
     void on_btnLoad_clicked();
 
+    void responseRead();
 private:
     Ui::MainWindow *ui;
 
