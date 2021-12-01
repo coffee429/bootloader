@@ -64,8 +64,8 @@ all: main-build
 main-build: test_boot.elf secondary-outputs
 
 # Tool invocations
-test_boot.elf: $(OBJS) $(USER_OBJS) D:\Engineering\Embedded\CubeIDE\basic\bootloader\bootloader\test_program\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "test_boot.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Engineering\Embedded\CubeIDE\basic\bootloader\bootloader\test_program\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test_boot.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+test_boot.elf: $(OBJS) $(USER_OBJS) D:\Engineering\XXX\bootloader\stm32_code\test_program\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "test_boot.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Engineering\XXX\bootloader\stm32_code\test_program\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test_boot.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

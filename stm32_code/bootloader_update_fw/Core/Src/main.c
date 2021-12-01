@@ -63,17 +63,6 @@ static void MX_USART2_UART_Init(void);
 
 uint8_t rx_data[1];
 
-int _write(int file, char *ptr, int len)
-{
-	int i;
-	for(i=0;i<len; i++)
-	{
-		ITM_SendChar(*ptr++);
-	}
-	return len;
-}
-
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	bootloader_get_data(rx_data[0]);
@@ -124,7 +113,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  bootloader_update(ADDR_UPDATE);
-
+	  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 
 
   }
@@ -215,7 +204,6 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);

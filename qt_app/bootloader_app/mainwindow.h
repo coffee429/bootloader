@@ -36,8 +36,6 @@ private:
 
     char hexConverter(char highByte, char lowByte);   // convert string to hex
 
-    void addBootloaderData(QByteArray addBuffer);     // add firmware data to bootloader buffer
-
 
 public:
     QSerialPort *mSerial;

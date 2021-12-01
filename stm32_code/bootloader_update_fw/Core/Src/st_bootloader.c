@@ -52,9 +52,30 @@ void bootloader_update(uint32_t address)
 		flash_write_array(boot.data_buffer, address, boot.total_bytes, _4_BYTE);
 		boot.jump_application = 0;
 		memset(boot.data_buffer, 0, HEX_BUFFER_SIZE);
-		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-	}
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 
+		// Deinit Pheripheral
+		HAL_RCC_DeInit();
+		HAL_DeInit();
+		HAL_GPIO_DeInit(LED1_GPIO_Port, LED1_Pin);
+		/* Turn off fault harder*/
+	    SCB->SHCSR &= ~( SCB_SHCSR_USGFAULTENA_Msk |\
+	    SCB_SHCSR_BUSFAULTENA_Msk | \
+	    SCB_SHCSR_MEMFAULTENA_Msk ) ;
+
+	    SysTick->CTRL = 0;
+	    SysTick->LOAD = 0;
+	    SysTick->VAL = 0;
+	   /* Set Main Stack Pointer*/
+	   __set_MSP(*((volatile uint32_t*) address));
+
+	   uint32_t JumpAddress = *((volatile uint32_t*) (address + 4));
+
+	   /* Set Program Counter to Blink LED Apptication Address*/
+	   void (*reset_handler)(void) = (void*)JumpAddress;
+	   reset_handler();
+
+	}
 }
 
 

@@ -130,8 +130,10 @@ void MainWindow::getDataRecord(QByteArray record)                               
             recordDataBuffer.insert(i, recordHexBuffer.at(i+4));                            // get data record in 1 record(line)
         }
         totalBytes += recordDataBuffer.size();                                              // add bytes to total bytes
-        addBootloaderData(recordDataBuffer);                                                // call function to add firmware data to bootloader buffer
-//        qInfo() << recordDataBuffer;
+        for(int i=0;i<recordDataBuffer.length();i++)
+        {
+            bootBuffer.insert(bootBuffIdx++, recordDataBuffer.at(i));                                  // add firmware data to bootloader buffer
+        }
     }
     recordDataBuffer.remove(0,21);                                                          // clear record data buffer
     recordHexBuffer.remove(0,21);                                                           // clear record hex buffer
@@ -148,29 +150,6 @@ char MainWindow::hexConverter(char highByte, char lowByte)                      
     else if(lowByte >= 'A' && lowByte <= 'F')		lowByte = lowByte - 'A' + 10;
 
     return (highByte << 4 | lowByte);
-}
-
-
-
-void MainWindow::addBootloaderData(QByteArray addBuffer)
-{
-    uint8_t dataSize = addBuffer.length();                                                  // firmware data size in 1 record
-    uint8_t _4ByteGroup = 0;                                                                // split data into group of 4 byte to swap, max 16 bytes
-    while (_4ByteGroup < dataSize/4)
-    {
-        uint8_t temp = addBuffer.at(_4ByteGroup*4);
-        addBuffer[_4ByteGroup*4] = addBuffer[_4ByteGroup*4 + 3];                            // swap byte 0 & byte 3
-        addBuffer[_4ByteGroup*4 + 3] = temp;
-        temp = addBuffer.at(_4ByteGroup*4 + 1);
-        addBuffer[_4ByteGroup*4 + 1] = addBuffer[_4ByteGroup*4 + 2];                        // swap byte 1 & byte 2
-        addBuffer[_4ByteGroup*4 + 2] = temp;
-        _4ByteGroup ++;
-    }
-
-    for(int i=0;i<addBuffer.length();i++)
-    {
-        bootBuffer.insert(bootBuffIdx++, addBuffer.at(i));                                  // add firmware data to bootloader buffer
-    }
 }
 
 void MainWindow::responseRead()
